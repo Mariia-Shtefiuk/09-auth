@@ -1,38 +1,44 @@
 "use client";
 
-import { Routes } from "@/config/routes";
 import css from "./TagsMenu.module.css";
-import { Tags } from "@/lib/api";
+import { getTagsClient } from "@/lib/api/clientApi";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-interface TagsMenuProps {
-  categories: Tags;
-}
+export default function TagsMenu() {
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [tags, setTags] = useState<string[]>([]);
 
-const TagsMenu = ({ categories }: TagsMenuProps) => {
-  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
+  useEffect(() => {
+    getTagsClient().then((data) => setTags(data));
+  }, []);
 
-  const handleClick = () => {
-    setIsNotesOpen(!isNotesOpen);
-  };
+  const toggle = () => setIsNotesOpen(!isNotesOpen);
 
   return (
     <div className={css.menuContainer}>
-      <button className={css.menuButton} onClick={handleClick}>
-        Notes {isNotesOpen ? "▾" : "▴"}
+      <button className={css.menuButton} onClick={toggle}>
+        Notes ▾
       </button>
-      {isNotesOpen && categories && (
+      {isNotesOpen && (
         <ul className={css.menuList}>
-          {categories.map((category) => (
-            <li key={category} className={css.menuItem}>
+          <li className={css.menuItem}>
+            <Link
+              href="/notes/filter/All"
+              onClick={toggle}
+              className={css.menuLink}
+            >
+              All
+            </Link>
+          </li>
+          {tags.map((tag) => (
+            <li key={tag} className={css.menuItem}>
               <Link
-                href={Routes.NotesFilter + category}
-                scroll={false}
+                href={`/notes/filter/${tag}`}
+                onClick={toggle}
                 className={css.menuLink}
-                onClick={() => setIsNotesOpen(false)}
               >
-                {category}
+                {tag}
               </Link>
             </li>
           ))}
@@ -40,6 +46,4 @@ const TagsMenu = ({ categories }: TagsMenuProps) => {
       )}
     </div>
   );
-};
-
-export default TagsMenu;
+}

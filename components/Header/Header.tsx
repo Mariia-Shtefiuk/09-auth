@@ -1,29 +1,27 @@
+"use client";
+
 import Link from "next/link";
 import css from "./Header.module.css";
-import { Routes } from "@/config/routes";
 import TagsMenu from "../TagsMenu/TagsMenu";
-import { getCategories } from "@/lib/api";
+import AuthNavigation from "../AuthNavigation/AuthNavigation";
 
-const Header = async () => {
-  const categories = await getCategories();
-
+export default function Header() {
   return (
     <header className={css.header}>
-      <Link href={Routes.Home} aria-label="Home">
+      <Link href="/" aria-label="Home">
         NoteHub
       </Link>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
           <li>
-            <Link href={Routes.Home}>Home</Link>
+            <Link href="/">Home</Link>
           </li>
           <li>
-            <TagsMenu categories={categories} />
+            <TagsMenu />
           </li>
+          <AuthNavigation />
         </ul>
       </nav>
     </header>
   );
-};
-
-export default Header;
+}
