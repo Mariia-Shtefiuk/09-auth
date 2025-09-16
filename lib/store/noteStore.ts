@@ -1,20 +1,23 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { Tag } from "@/lib/api";
 
-const initialDraft = {
-  title: "",
-  content: "",
-  tag: "Todo" as Tag,
-};
-
-type Draft = typeof initialDraft;
+interface Draft {
+  title: string;
+  content: string;
+  tag: string;
+}
 
 interface NoteStore {
   draft: Draft;
   setDraft: (note: Partial<Draft>) => void;
   clearDraft: () => void;
 }
+
+const initialDraft: Draft = {
+  title: "",
+  content: "",
+  tag: "Todo",
+};
 
 export const useNoteStore = create<NoteStore>()(
   persist(
@@ -31,5 +34,3 @@ export const useNoteStore = create<NoteStore>()(
     }
   )
 );
-
-export { initialDraft };

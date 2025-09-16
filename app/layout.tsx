@@ -71,7 +71,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* ✅ додаємо roboto.variable */}
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable}`}
       >
