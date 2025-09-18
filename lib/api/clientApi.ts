@@ -1,7 +1,7 @@
 "use client";
 
-import type { Note } from "@/types/note";
-import type { User } from "@/types/user";
+import { Note } from "@/types/note";
+import { User } from "@/types/user";
 import { RegisterRequest, LoginRequest } from "@/types/auth";
 import { nextServer } from "./api";
 import { isAxiosError } from "axios";
@@ -11,7 +11,7 @@ export interface FetchNotesResponse {
   totalPages: number;
 }
 
-const Tags = ["All", "Todo", "Work", "Personal", "Shopping"];
+const DEFAULT_TAGS = ["Todo", "Personal", "Work", "Shopping", "Meeting"];
 
 export async function registerClient(data: RegisterRequest): Promise<User> {
   try {
@@ -75,7 +75,7 @@ export async function updateUser(
   update: Partial<{ username: string }>
 ): Promise<User> {
   try {
-    const { data: user } = await nextServer.patch<User>("/users/me");
+    const { data: user } = await nextServer.patch<User>("/users/me", update);
     return user;
   } catch (error) {
     if (isAxiosError(error)) {
@@ -99,14 +99,20 @@ export async function fetchNotesClient(
     if (search) params.search = search;
     if (tag && tag.toLowerCase() !== "all") params.tag = tag;
 
+    console.log("Fetching notes with params:", params);
+
     const { data } = await nextServer.get<FetchNotesResponse>("/notes", {
       params,
     });
+
+    console.log("Fetched notes data:", data);
     return data;
   } catch (error) {
     if (isAxiosError(error)) {
+      console.error("Axios error response:", error.response?.data);
       throw new Error(error.response?.data?.message || "Fetching notes failed");
     }
+    console.error("Unknown error:", error);
     throw new Error("Fetching notes failed");
   }
 }
@@ -157,9 +163,9 @@ export async function getTagsClient(): Promise<string[]> {
     const tagsFromNotes: string[] = Array.from(
       new Set(res.notes.map((note) => note.tag))
     );
-    return Array.from(new Set([...Tags, ...tagsFromNotes]));
+    return Array.from(new Set([...DEFAULT_TAGS, ...tagsFromNotes]));
   } catch (error) {
     console.error("Cannot fetch tags:", error);
-    return Tags;
+    return DEFAULT_TAGS;
   }
 }

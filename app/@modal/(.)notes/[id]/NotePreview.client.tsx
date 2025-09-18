@@ -1,37 +1,56 @@
 "use client";
 
-import Modal from "@/components/Modal/Modal";
-import { fetchNoteById } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import css from "./NotePreview.module.css";
+import { useQuery } from "@tanstack/react-query";
 
-interface NotePreviewClientProps {
+import Loader from "@/app/loading";
+import { fetchNoteById } from "@/lib/api/clientApi";
+
+type NotePreviewProps = {
   id: string;
-}
+};
 
-const NotePreviewClient = ({ id }: NotePreviewClientProps) => {
+const Modal = ({ children }: { children: React.ReactNode }) => {
   const router = useRouter();
-  const onClose = () => router.back();
+  const close = () => router.back();
 
-  const {
-    data: note,
-    isLoading,
-    error,
-  } = useQuery({
+  return (
+    <div className={css.backdrop}>
+      <div className={css.modal}>
+        <button onClick={close} className={css.backBtn}>
+          Close
+        </button>
+        {children}
+      </div>
+    </div>
+  );
+};
+
+const NotePreviewClient = ({ id }: NotePreviewProps) => {
+  const { data: note, isLoading } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
+    placeholderData: (prev) => prev,
     refetchOnMount: false,
   });
 
-  if (isLoading) return <p>Loading, please wait...</p>;
-  if (error || !note) return <p>Could not fetch note. {error?.message}</p>;
+  if (isLoading) return <Loader />;
+  if (!note) return <p>Note not found</p>;
 
   return (
-    <Modal onClose={onClose}>
-      <h2>{note.title}</h2>
-      <b>{note.tag}</b>
-      <p>{note.content}</p>
-      <p>{note.updatedAt ?? note.createdAt}</p>
+    <Modal>
+      <div className={css.item}>
+        <h2 className={`${css.header} ${css.h2}`}>{note.title}</h2>
+        <p className={css.content}>{note.content}</p>
+        <p className={css.date}>
+          Created: {new Date(note.createdAt).toLocaleDateString()}
+        </p>
+        <p className={css.date}>
+          Updated: {new Date(note.updatedAt).toLocaleDateString()}
+        </p>
+        <p className={css.tag}>{note.tag}</p>
+      </div>
     </Modal>
   );
 };
