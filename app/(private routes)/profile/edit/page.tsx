@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import css from "./ProfileEdit.module.css";
+import css from "./ProfileEditPage.module.css";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useState } from "react";
 import { editMe, EditRequest } from "@/lib/api/clientApi";

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import css from "./Sidebar.module.css";
+import css from "./SidebarNotes.module.css";
 import { getCategories } from "@/lib/api/clientApi";
 import { Routes } from "@/config/routes";
 
