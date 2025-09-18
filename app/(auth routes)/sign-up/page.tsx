@@ -1,15 +1,11 @@
 "use client";
-
-import { Routes } from "@/config/routes";
-import { register, RegisterRequest } from "@/lib/api/clientApi";
+import { registerUser, RegisterRequest } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import css from "./SignUpPage.module.css";
-import toast from "react-hot-toast";
-import { isAxiosError } from "axios";
 
-const SignUp = () => {
+export default function SignUpPage() {
   const router = useRouter();
   const setUser = useAuthStore((state) => state.setUser);
   const [error, setError] = useState("");
@@ -18,20 +14,18 @@ const SignUp = () => {
     setError("");
     try {
       const formValues = Object.fromEntries(formData) as RegisterRequest;
-      const response = await register(formValues);
-      if (response) {
-        setUser(response);
-        toast.success("You have successfully registered!");
-        router.push(Routes.Profile);
+      const user = await registerUser(formValues);
+      if (user) {
+        setUser(user);
+        alert("Registration completed successfully");
+        router.push("/profile");
       } else {
         setError("Invalid email or password");
       }
     } catch (error) {
-      if (isAxiosError(error)) {
-        setError(error.message);
-      } else {
-        setError("Internal Server Error");
-      }
+      console.error("Registration error:", error);
+      if (error instanceof Error) setError(error.message);
+      else setError("Server error");
     }
   };
 
@@ -71,6 +65,4 @@ const SignUp = () => {
       </form>
     </main>
   );
-};
-
-export default SignUp;
+}

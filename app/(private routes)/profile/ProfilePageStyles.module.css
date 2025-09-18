@@ -73,3 +73,12 @@
 .editProfileButton:hover {
   background-color: #0b5ed7;
 }
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  font-size: 1.2rem;
+  font-weight: 500;
+}

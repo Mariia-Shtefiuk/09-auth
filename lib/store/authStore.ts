@@ -8,10 +8,19 @@ interface AuthStore {
   clearIsAuthenticated: () => void;
 }
 
-export const useAuthStore = create<AuthStore>()((set) => ({
+export const useAuthStore = create<AuthStore>((set) => ({
   isAuthenticated: false,
   user: null,
-  setUser: (user: User) => set(() => ({ isAuthenticated: true, user })),
-  clearIsAuthenticated: () =>
-    set(() => ({ isAuthenticated: false, user: null })),
+
+  // Встановлюємо користувача і ставимо isAuthenticated в true
+  setUser: (user: User) => {
+    console.log("User logged in:", user.email);
+    set(() => ({ isAuthenticated: true, user }));
+  },
+
+  // Логаут: чистимо дані
+  clearIsAuthenticated: () => {
+    console.log("User logged out");
+    set(() => ({ isAuthenticated: false, user: null }));
+  },
 }));

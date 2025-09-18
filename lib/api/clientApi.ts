@@ -1,18 +1,15 @@
 import { User } from "@/types/user";
-import { FetchNotes, nextServer } from "./api";
+import { nextServer } from "./api";
 import { Note } from "@/types/note";
 
-export const Tags = [
-  "All",
-  "Todo",
-  "Work",
-  "Personal",
-  "Meeting",
-  "Shopping",
-] as const;
+export interface FetchNotesResponse {
+  notes: Note[];
+  totalPages: number;
+}
 
-export type Tags = typeof Tags;
+export const Tags = ["All", "Todo", "Work", "Personal", "Shopping"] as const;
 
+export type Tags = (typeof Tags)[number];
 export type SortBy = "created" | "updated";
 
 export type RegisterRequest = {
@@ -39,71 +36,121 @@ export const fetchNotes = async (
   search: string,
   page: number = 1,
   perPage: number = 10,
-  tag?: Exclude<Tags[number], "All">,
+  tag?: Exclude<Tags, "All">,
   sortBy?: SortBy
-) => {
-  const { data } = await nextServer.get<FetchNotes>("notes", {
-    params: {
-      search,
-      page,
-      perPage,
-      tag,
-      sortBy,
-    },
-  });
-  return data;
+): Promise<FetchNotesResponse> => {
+  try {
+    const { data } = await nextServer.get<FetchNotesResponse>("notes", {
+      params: { search, page, perPage, tag, sortBy },
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch notes:", error);
+    throw error;
+  }
 };
 
-export const createNote = async (note: NewNoteData) => {
-  const { title, content, tag } = note;
-  const { data } = await nextServer.post<Note>("notes", {
-    title,
-    content,
-    tag,
-  });
-  return data;
+export const createNote = async ({ title, content, tag }: NewNoteData) => {
+  try {
+    const { data } = await nextServer.post<Note>("notes", {
+      title,
+      content,
+      tag,
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to create note:", error);
+    throw error;
+  }
 };
 
 export const fetchNoteById = async (id: string) => {
-  const { data } = await nextServer.get<Note>(`notes/${id}`);
-  return data;
+  try {
+    const { data } = await nextServer.get<Note>(`notes/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Failed to fetch note ${id}:`, error);
+    throw error;
+  }
 };
 
 export const deleteNote = async (id: string) => {
-  const { data } = await nextServer.delete<Note>(`notes/${id}`);
-  return data;
+  try {
+    const { data } = await nextServer.delete<Note>(`notes/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Failed to delete note ${id}:`, error);
+    throw error;
+  }
 };
 
 export const getCategories = async () => {
-  const { data } = await nextServer.get<Tags>("categories");
-  return data;
+  try {
+    const { data } = await nextServer.get<Tags[]>("categories");
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch categories:", error);
+    throw error;
+  }
 };
 
-export const register = async (userData: RegisterRequest) => {
-  const { data } = await nextServer.post<User>("auth/register", userData);
-  return data;
+export const registerUser = async (
+  userData: RegisterRequest
+): Promise<User> => {
+  try {
+    const { data } = await nextServer.post<User>("auth/register", userData);
+    return data;
+  } catch (error) {
+    console.error("Registration failed:", error);
+    throw error;
+  }
 };
 
-export const login = async (userData: RegisterRequest) => {
-  const { data } = await nextServer.post<User>("auth/login", userData);
-  return data;
+export const loginUser = async (userData: RegisterRequest): Promise<User> => {
+  try {
+    const { data } = await nextServer.post<User>("auth/login", userData);
+    return data;
+  } catch (error) {
+    console.error("Login failed:", error);
+    throw error;
+  }
 };
 
-export const checkSession = async () => {
-  const { data } = await nextServer.get<CheckSessionRequest>("auth/session");
-  return data.success;
+export const checkSession = async (): Promise<boolean> => {
+  try {
+    const { data } = await nextServer.get<CheckSessionRequest>("auth/session");
+    return data.success;
+  } catch (error) {
+    console.error("Session check failed:", error);
+    return false;
+  }
 };
 
-export const getMe = async () => {
-  const { data } = await nextServer.get<User>("users/me");
-  return data;
+export const getUserProfile = async (): Promise<User> => {
+  try {
+    const { data } = await nextServer.get<User>("users/me");
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch user profile:", error);
+    throw error;
+  }
 };
 
-export const editMe = async (userData: EditRequest) => {
-  const { data } = await nextServer.patch<User>("users/me", userData);
-  return data;
+export const editUserProfile = async (userData: EditRequest): Promise<User> => {
+  try {
+    const { data } = await nextServer.patch<User>("users/me", userData);
+    return data;
+  } catch (error) {
+    console.error("Failed to update profile:", error);
+    throw error;
+  }
 };
 
 export const logout = async (): Promise<void> => {
-  await nextServer.post("auth/logout");
+  try {
+    await nextServer.post("auth/logout");
+  } catch (error) {
+    console.error("Logout failed:", error);
+    throw error;
+  }
 };

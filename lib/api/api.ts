@@ -1,16 +1,11 @@
 import axios from "axios";
-import type { Note } from "../../types/note";
 
-export interface FetchNotes {
-  notes: Note[];
-  totalPages: number;
+const baseURL = process.env.NEXT_PUBLIC_API_URL;
+if (!baseURL) {
+  throw new Error("NEXT_PUBLIC_API_URL is not defined");
 }
 
-export const getBaseURL = () => {
-  return process.env.NEXT_PUBLIC_API_URL;
-};
-
 export const nextServer = axios.create({
-  baseURL: `${getBaseURL()}/api/`,
+  baseURL: process.env.NEXT_PUBLIC_API_URL + "/api",
   withCredentials: true,
 });
