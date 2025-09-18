@@ -1,9 +1,10 @@
 .app {
   width: 90%;
+  height: 100%;
+  overflow-y: scroll;
   max-width: 1280px;
   margin: 0px auto;
   padding: 0 16px 16px;
-  flex: 1;
 }
 
 .toolbar {
@@ -20,14 +21,13 @@
   padding: 6px 12px;
   font-size: 16px;
   color: #fff;
-  background-color: #6c0505;
+  background-color: #0d6efd;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  text-decoration: none;
   transition: background-color 0.2s ease;
 }
 
 .button:hover {
-  background-color: #ae1212;
+  background-color: #0b5ed7;
 }

@@ -1,113 +1,101 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
-import css from "./EditProfilePage.module.css";
-import { getUserProfile, updateUser } from "@/lib/api/clientApi";
-import Loader from "@/app/loading";
+import css from "./ProfileEdit.module.css";
 import { useAuthStore } from "@/lib/store/authStore";
+import { useState } from "react";
+import { editMe, EditRequest } from "@/lib/api/clientApi";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { Routes } from "@/config/routes";
+import { isAxiosError } from "axios";
 
-export default function EditProfilePage() {
+const ProfileEdit = () => {
   const router = useRouter();
-  const { user, setUser } = useAuthStore();
-  const [username, setUsername] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    async function fetchProfile() {
-      if (user) {
-        setUsername(user.username || "");
-        setEmail(user.email || "");
-        setLoading(false);
-        return;
-      }
-
-      try {
-        setLoading(true);
-        const currentUser = await getUserProfile();
-        setUsername(currentUser.username || "");
-        setEmail(currentUser.email || "");
-        setUser(currentUser);
-      } catch (err) {
-        console.error(err);
-        setError("Unable to load profile");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchProfile();
-  }, [user, setUser]);
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (formData: FormData) => {
+    setError("");
     try {
-      const updatedUser = await updateUser({ username });
-      setUser(updatedUser);
-      router.push("/profile");
-    } catch (err) {
-      console.error(err);
-      setError("Failed to update profile");
+      const formValues = Object.fromEntries(formData) as EditRequest;
+      const response = await editMe(formValues);
+      if (response) {
+        setUser(response);
+        toast.success("You have successfully edited your profile!");
+        router.push(Routes.Profile);
+      } else {
+        setError("Error occured while editing your profile");
+      }
+    } catch (error) {
+      if (isAxiosError(error)) {
+        setError(error.message);
+      } else {
+        setError("Internal Server Error");
+      }
     }
   };
-
-  const handleCancel = () => {
-    if (window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/profile");
-    }
-  };
-
-  if (loading) return <Loader />;
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
-        <h1 className={css.formTitle}>Edit Profile</h1>
-
-        <Image
-          src="https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"
-          alt="User Avatar"
-          width={150}
-          height={150}
-          className={css.avatar}
-        />
-
-        {error && <p className={css.error}>{error}</p>}
-
-        <form className={css.profileInfo} onSubmit={handleSave}>
-          <div className={css.usernameWrapper}>
-            <label htmlFor="username">Username:</label>
-            <input
-              id="username"
-              type="text"
-              className={css.input}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
+        {user ? (
+          <>
+            <h1 className={css.formTitle}>Edit Profile</h1>
+            <Image
+              src={user.avatar}
+              alt="User Avatar"
+              width={120}
+              height={120}
+              className={css.avatar}
             />
-          </div>
+            <form className={css.profileInfo} action={handleSubmit}>
+              <div className={css.usernameWrapper}>
+                <label htmlFor="username">{user?.username}:</label>
+                <input
+                  name="username"
+                  type="text"
+                  id="username"
+                  className={css.input}
+                  defaultValue={user.username}
+                />
+              </div>
 
-          <p>Email: {email}</p>
+              <div className={css.usernameWrapper}>
+                <label htmlFor="email">Email: {user?.email}:</label>
+                <input
+                  name="email"
+                  type="email"
+                  id="email"
+                  className={css.input}
+                  defaultValue={user.email}
+                  disabled
+                />
+              </div>
 
-          <div className={css.actions}>
-            <button type="submit" className={css.saveButton}>
-              Save
-            </button>
-            <button
-              type="button"
-              className={css.cancelButton}
-              onClick={handleCancel}
-            >
-              Cancel
-            </button>
-          </div>
-        </form>
+              <div className={css.actions}>
+                <button type="submit" className={css.saveButton}>
+                  Save
+                </button>
+                <button
+                  type="button"
+                  className={css.cancelButton}
+                  onClick={() => router.push(Routes.Profile)}
+                >
+                  Cancel
+                </button>
+              </div>
+
+              {error && <p className={css.error}>{error}</p>}
+            </form>
+          </>
+        ) : (
+          <p>Loading your profile....</p>
+        )}
       </div>
     </main>
   );
-}
+};
+
+export default ProfileEdit;

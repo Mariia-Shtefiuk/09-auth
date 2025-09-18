@@ -1,24 +1,31 @@
 import Link from "next/link";
-import css from "./SidebarNotes.module.css";
-import { getTags } from "@/lib/api/serverApi";
+import css from "./Sidebar.module.css";
+import { getCategories } from "@/lib/api/clientApi";
+import { Routes } from "@/config/routes";
 
-export default async function SidebarNotes() {
-  const tags = await getTags();
+const SidebarNotes = async () => {
+  const categories = await getCategories();
 
   return (
     <ul className={css.menuList}>
       <li className={css.menuItem}>
-        <Link href="/notes/filter/All" className={css.menuLink}>
-          All
+        <Link href={Routes.NoteCreate} className={css.menuLink}>
+          Create Note
         </Link>
       </li>
-      {tags.map((tag) => (
-        <li key={tag} className={css.menuItem}>
-          <Link href={`/notes/filter/${tag}`} className={css.menuLink}>
-            {tag}
+      {categories.map((category) => (
+        <li key={category} className={css.menuItem}>
+          <Link
+            href={Routes.NotesFilter + category}
+            scroll={false}
+            className={css.menuLink}
+          >
+            {category}
           </Link>
         </li>
       ))}
     </ul>
   );
-}
+};
+
+export default SidebarNotes;

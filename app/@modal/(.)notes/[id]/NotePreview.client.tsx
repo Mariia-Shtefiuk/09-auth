@@ -1,56 +1,38 @@
 "use client";
 
+import Modal from "@/components/Modal/Modal";
+import { fetchNoteById } from "@/lib/api/clientApi";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import css from "./NotePreview.module.css";
-import { useQuery } from "@tanstack/react-query";
 
-import Loader from "@/app/loading";
-import { fetchNoteById } from "@/lib/api/clientApi";
-
-type NotePreviewProps = {
+interface NotePreviewClientProps {
   id: string;
-};
+}
 
-const Modal = ({ children }: { children: React.ReactNode }) => {
+const NotePreviewClient = ({ id }: NotePreviewClientProps) => {
   const router = useRouter();
-  const close = () => router.back();
+  const onClose = () => router.back();
 
-  return (
-    <div className={css.backdrop}>
-      <div className={css.modal}>
-        <button onClick={close} className={css.backBtn}>
-          Close
-        </button>
-        {children}
-      </div>
-    </div>
-  );
-};
-
-const NotePreviewClient = ({ id }: NotePreviewProps) => {
-  const { data: note, isLoading } = useQuery({
+  const {
+    data: note,
+    isLoading,
+    error,
+  } = useQuery({
     queryKey: ["note", id],
     queryFn: () => fetchNoteById(id),
-    placeholderData: (prev) => prev,
     refetchOnMount: false,
   });
 
-  if (isLoading) return <Loader />;
-  if (!note) return <p>Note not found</p>;
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error || !note) return <p>Could not fetch note. {error?.message}</p>;
 
   return (
-    <Modal>
-      <div className={css.item}>
-        <h2 className={`${css.header} ${css.h2}`}>{note.title}</h2>
-        <p className={css.content}>{note.content}</p>
-        <p className={css.date}>
-          Created: {new Date(note.createdAt).toLocaleDateString()}
-        </p>
-        <p className={css.date}>
-          Updated: {new Date(note.updatedAt).toLocaleDateString()}
-        </p>
-        <p className={css.tag}>{note.tag}</p>
-      </div>
+    <Modal onClose={onClose}>
+      <h2>{note.title}</h2>
+      <b>{note.tag}</b>
+      <p>{note.content}</p>
+      <p>{note.updatedAt ?? note.createdAt}</p>
     </Modal>
   );
 };

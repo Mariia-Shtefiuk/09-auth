@@ -1,52 +1,35 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { checkSession, getMe } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
-import { getUserProfile, checkSession } from "@/lib/api/clientApi";
-import Loader from "@/app/loading";
+import { useEffect } from "react";
 
-const PUBLIC_ROUTES = ["/sign-in", "/sign-up"];
-const PRIVATE_ROUTES = ["/profile", "/notes"];
-
-export default function AuthProvider({
-  children,
-}: {
+interface AuthProviderProps {
   children: React.ReactNode;
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const { setUser, clearIsAuthenticated, isAuthenticated } = useAuthStore();
-  const [loading, setLoading] = useState(true);
+}
+
+const AuthProvider = ({ children }: AuthProviderProps) => {
+  const setUser = useAuthStore((state) => state.setUser);
+  const clearIsAuthenticated = useAuthStore(
+    (state) => state.clearIsAuthenticated
+  );
 
   useEffect(() => {
-    async function verifyAuth() {
-      try {
-        await checkSession();
-        const user = await getUserProfile();
-        setUser(user);
-
-        if (PUBLIC_ROUTES.includes(pathname)) router.replace("/profile");
-      } catch (err) {
-        clearIsAuthenticated();
-
-        if (PRIVATE_ROUTES.some((route) => pathname.startsWith(route))) {
-          router.replace("/sign-in");
+    const fetchUser = async () => {
+      const isAuthenticated = await checkSession();
+      if (isAuthenticated) {
+        const user = await getMe();
+        if (user) {
+          setUser(user);
         }
-      } finally {
-        setLoading(false);
+      } else {
+        clearIsAuthenticated();
       }
-    }
-    verifyAuth();
-  }, [clearIsAuthenticated, pathname, router, setUser]);
+    };
+    fetchUser();
+  }, [setUser, clearIsAuthenticated]);
 
-  if (loading) return <Loader />;
+  return children;
+};
 
-  if (
-    !isAuthenticated &&
-    PRIVATE_ROUTES.some((route) => pathname.startsWith(route))
-  )
-    return null;
-
-  return <>{children}</>;
-}
+export default AuthProvider;

@@ -1,9 +1,11 @@
 "use client";
 
-interface ErrorProps {
+interface Props {
   error: Error;
 }
 
-export default function Error({ error }: ErrorProps) {
+const Error = ({ error }: Props) => {
   return <p>Could not fetch the list of notes. {error.message}</p>;
-}
+};
+
+export default Error;

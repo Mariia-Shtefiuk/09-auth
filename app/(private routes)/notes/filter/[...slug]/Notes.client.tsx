@@ -1,71 +1,62 @@
 "use client";
 
-import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { useDebounce } from "use-debounce";
-import SearchBox from "@/components/SearchBox/SearchBox";
-import Pagination from "@/components/Pagination/Pagination";
 import NoteList from "@/components/NoteList/NoteList";
-import Loader from "@/app/loading";
-
-import css from "./Notes.page.module.css";
+import Pagination from "@/components/Pagination/Pagination";
+import SearchBox from "@/components/SearchBox/SearchBox";
+import { fetchNotes, Tags } from "@/lib/api/clientApi";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { Toaster } from "react-hot-toast";
+import { useDebounce, useDebouncedCallback } from "use-debounce";
+import css from "./Notes.client.module.css";
+import { Routes } from "@/config/routes";
 import Link from "next/link";
-import { fetchNotesClient, FetchNotesResponse } from "@/lib/api/clientApi";
 
 interface NotesClientProps {
-  tag?: string;
+  category: Exclude<Tags[number], "All"> | undefined;
 }
 
-export default function NotesClient({ tag }: NotesClientProps) {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
-  const [debouncedSearch] = useDebounce(search, 500);
-
-  const { data, isFetching, isError, error } = useQuery<FetchNotesResponse>({
-    queryKey: ["notes", debouncedSearch, page, tag],
-    queryFn: () => fetchNotesClient(debouncedSearch, page, 9, tag),
-    placeholderData: (prev) => prev,
+const NotesClient = ({ category }: NotesClientProps) => {
+  const [query, setQuery] = useState<string>("");
+  const [debouncedQuery] = useDebounce(query, 300);
+  const [page, setPage] = useState<number>(1);
+  const {
+    data: notes,
+    isSuccess,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["notes", { search: debouncedQuery, page, category }],
+    queryFn: () => fetchNotes(debouncedQuery, page, undefined, category),
+    refetchOnMount: false,
+    placeholderData: keepPreviousData,
   });
 
-  const handleSearchChange = (value: string) => {
-    setSearch(value);
+  const totalPages = notes?.totalPages ?? 1;
+  const onQueryChange = useDebouncedCallback((value) => {
     setPage(1);
-  };
+    setQuery(value);
+  }, 300);
 
-  const handlePageChange = (selectedPage: number) => {
-    setPage(selectedPage);
-  };
+  if (isLoading) return <p>Loading, please wait...</p>;
+  if (error || !notes)
+    return <p>Could not fetch the list of notes. {error?.message}</p>;
 
   return (
     <div className={css.app}>
+      <Toaster />
       <header className={css.toolbar}>
-        <SearchBox value={search} onChange={handleSearchChange} />
-        {data && data.totalPages > 1 && (
-          <Pagination
-            pageCount={data.totalPages}
-            currentPage={page}
-            onPageChange={handlePageChange}
-          />
+        <SearchBox onChange={onQueryChange} />
+        {totalPages > 1 && (
+          <Pagination totalPages={totalPages} page={page} setPage={setPage} />
         )}
-        <Link className={css.button} href="/notes/action/create">
+        <Link className={css.button} href={Routes.NoteCreate}>
           Create note +
         </Link>
       </header>
-
-      <h2 className={css.title}>
-        {tag ? `Notes tagged: ${tag}` : "All notes"}
-      </h2>
-
-      {isFetching && <Loader />}
-      {isError && <p>Error: {(error as Error).message}</p>}
-      {data && data.notes.length === 0 && !isFetching && (
-        <p className={css.notfound}>
-          {debouncedSearch
-            ? `No notes found for "${debouncedSearch}"`
-            : "No notes found"}
-        </p>
-      )}
-      {data && data.notes.length > 0 && <NoteList notes={data.notes} />}
+      {isSuccess && notes && <NoteList notes={notes.notes} />}
     </div>
   );
-}
+};
+
+export default NotesClient;

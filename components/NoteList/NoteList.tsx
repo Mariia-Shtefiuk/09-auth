@@ -1,9 +1,13 @@
+"use client";
+
 import css from "./NoteList.module.css";
-import type { Note } from "@/types/note";
+import type { Note } from "../../types/note";
+import { deleteNote } from "@/lib/api/clientApi";
+import { Loading } from "notiflix";
+import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { deleteNoteClient } from "@/lib/api/clientApi";
-// import { Loading } from "notiflix";
+import { Routes } from "@/config/routes";
 import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
 
 interface NoteListProps {
@@ -13,38 +17,50 @@ interface NoteListProps {
 export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: deleteNoteClient,
+  const noteDeletion = useMutation({
+    mutationFn: async (id: string) => {
+      const data = await deleteNote(id);
+      return data;
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["notes"],
-      });
+      Loading.remove();
+      toast.success("Note has been successfully deleted!");
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
+    },
+    onError: () => {
+      Loading.remove();
+      toast.error("Error occured while deleting note!");
     },
   });
 
-  if (notes.length === 0) return null;
+  const onDelete = (id: string) => {
+    Loading.hourglass();
+    noteDeletion.mutate(id);
+  };
 
   return (
-    <>
-      {mutation.isPending && <LoadingIndicator />}
-      <ul className={css.list}>
-        {notes.map((note) => (
-          <li className={css.listItem} key={note.id}>
-            <h2 className={css.title}>{note.title}</h2>
-            <p className={css.content}>{note.content}</p>
+    <ul className={css.list}>
+      {notes.map(({ id, title, content, tag }) => {
+        return (
+          <li key={id} className={css.listItem}>
+            <h2 className={css.title}>{title}</h2>
+            <p className={css.content}>{content}</p>
             <div className={css.footer}>
-              <span className={css.tag}>{note.tag}</span>
-              <Link href={`/notes/${note.id}`}>View details</Link>
-              <button
-                className={css.button}
-                onClick={() => mutation.mutate(note.id)}
+              <span className={css.tag}>{tag}</span>
+              <Link
+                className={css.tag}
+                href={Routes.NoteDetails + id}
+                scroll={false}
               >
+                View details <LoadingIndicator />
+              </Link>
+              <button className={css.button} onClick={() => onDelete(id)}>
                 Delete
               </button>
             </div>
           </li>
-        ))}
-      </ul>
-    </>
+        );
+      })}
+    </ul>
   );
 }

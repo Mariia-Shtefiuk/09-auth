@@ -1,70 +1,73 @@
-import { Metadata } from "next";
-import css from "./profilePage.module.css";
 import Link from "next/link";
+import { getServerMe } from "@/lib/api/serverApi";
+import { Routes } from "@/config/routes";
+import css from "./Profile.module.css";
 import Image from "next/image";
-import { User } from "@/types/user";
-import { getUserProfile } from "@/lib/api/serverApi";
+import { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Note Hub. Your Profile",
-  description: "Personal profile for making notes",
-  openGraph: {
-    title: "Note Hub. Your Profile",
-    description: "Personal profile for making notes",
-    images: [
-      {
-        url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
-        width: 1200,
-        height: 630,
-        alt: "Note Hub Logo",
-      },
-    ],
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const user = await getServerMe();
+  return {
+    title: "NoteHub - Share Notes Instantly Online",
+    description: `This is your profile ${user.username}. Here your written notes on Notehub. By @Iryna-Poluhovich`,
+    openGraph: {
+      title: "NoteHub - Share Notes Instantly Online",
+      description: `This is your profile ${user.username}. Here your written notes on Notehub. By @Iryna-Poluhovich`,
+      type: "website",
+      images: [
+        {
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+          width: 1200,
+          height: 630,
+          alt: "NoteHub - Share Notes Instantly Online",
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "NoteHub - Share Notes Instantly Online",
+      description: `This is your profile ${user.username}. Here your written notes on Notehub. By @Iryna-Poluhovich`,
+      images: [
+        {
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+          width: 1200,
+          height: 630,
+          alt: "NoteHub - Share Notes Instantly Online",
+        },
+      ],
+      creator: "github.com/Iryna-Poluhovich",
+    },
+  };
+}
 
-export default async function Profile() {
-  let user: User | null = null;
-
-  try {
-    user = await getUserProfile();
-  } catch (err) {
-    console.error("Failed to fetch user profile:", err);
-  }
-
-  if (!user) {
-    return (
-      <main className={css.mainContent}>
-        <p>Please log in to see your profile.</p>
-        <Link href="/sign-in">Go to Login</Link>
-      </main>
-    );
-  }
+const Profile = async () => {
+  const user = await getServerMe();
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <div className={css.header}>
           <h1 className={css.formTitle}>Profile Page</h1>
-          <Link href="/profile/edit" className={css.editProfileButton}>
+          <Link href={Routes.ProfileEdit} className={css.editProfileButton}>
             Edit Profile
           </Link>
         </div>
-
         <div className={css.avatarWrapper}>
           <Image
-            src="https://ac.goit.global/fullstack/react/notehub-og-meta.jpg"
+            src={user.avatar}
             alt="User Avatar"
-            width={150}
-            height={150}
+            width={120}
+            height={120}
             className={css.avatar}
           />
         </div>
-
         <div className={css.profileInfo}>
-          <p>Username: {user.username || "N/A"}</p>
+          <p>Username: {user.username}</p>
           <p>Email: {user.email}</p>
         </div>
       </div>
     </main>
   );
-}
+};
+
+export default Profile;

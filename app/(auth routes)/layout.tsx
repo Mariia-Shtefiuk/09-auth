@@ -1,17 +1,22 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-export default function SignInUpLayout({
-  children,
-}: {
+interface PublicLayoutProps {
   children: React.ReactNode;
-}) {
+}
+
+const PublicLayout = ({ children }: PublicLayoutProps) => {
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     router.refresh();
+    setLoading(false);
   }, [router]);
-  return <>{children}</>;
-}
+
+  return <> {loading ? <p>Loading...</p> : children}</>;
+};
+
+export default PublicLayout;

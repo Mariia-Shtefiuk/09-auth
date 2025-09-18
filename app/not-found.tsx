@@ -1,34 +1,37 @@
-import { Metadata } from "next";
-import css from "./not-found.module.css";
+import type { Metadata } from "next";
+import css from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "404 | Page Not Found",
-  description: "This page doesn'n exist",
+  title: "404 - Page Not Found | NoteHub",
+  description:
+    "This page does not exist. The resource you are looking for was not found on NoteHub.",
+  metadataBase: new URL("https://notehub.example.com"),
   openGraph: {
-    title: "404 | Page Not Found",
-    description: "This page doesn'n exist",
-    url: "https://08-zustand-ten-ochre.vercel.app/not-found",
+    title: "404 - Page Not Found | NoteHub",
+    description:
+      "This page does not exist. The resource you are looking for was not found on NoteHub.",
+    url: "https://notehub.example.com/404",
     images: [
       {
         url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
         width: 1200,
         height: 630,
-        alt: "Note Hub Logo",
+        alt: "NoteHub 404 Preview",
       },
     ],
+    type: "website",
   },
 };
 
-export default function NotFound() {
+const NotFound = () => {
   return (
-    <>
-      <div className={css.container}>
-        <h1 className={css.error}>404</h1>
-        <p className={css.message}>Oooops! Page not found</p>
-        <p className={css.description}>
-          Sorry, the page you are looking for does not exist.
-        </p>
-      </div>
-    </>
+    <div className={css.container}>
+      <h1 className={css.title}>404 - Page not found</h1>
+      <p className={css.description}>
+        Sorry, the page you are looking for does not exist.
+      </p>
+    </div>
   );
-}
+};
+
+export default NotFound;

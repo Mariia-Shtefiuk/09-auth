@@ -1,44 +1,41 @@
 "use client";
 
+import { Routes } from "@/config/routes";
 import css from "./TagsMenu.module.css";
-import { getTagsClient } from "@/lib/api/clientApi";
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { getCategories, Tags } from "@/lib/api/clientApi";
 
-export default function TagsMenu() {
-  const [isNotesOpen, setIsNotesOpen] = useState(false);
-  const [tags, setTags] = useState<string[]>([]);
+const TagsMenu = () => {
+  const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
+  const [categories, setCategories] = useState<Tags>(Tags);
+
+  const handleClick = () => setIsNotesOpen(!isNotesOpen);
 
   useEffect(() => {
-    getTagsClient().then((data) => setTags(data));
+    const fetchCategories = async () => {
+      const data = await getCategories();
+      setCategories(data);
+    };
+    fetchCategories();
   }, []);
-
-  const toggle = () => setIsNotesOpen(!isNotesOpen);
 
   return (
     <div className={css.menuContainer}>
-      <button className={css.menuButton} onClick={toggle}>
-        Notes ▾
+      <button className={css.menuButton} onClick={handleClick}>
+        Notes {isNotesOpen ? "▾" : "▴"}
       </button>
-      {isNotesOpen && (
+      {isNotesOpen && categories && (
         <ul className={css.menuList}>
-          <li className={css.menuItem}>
-            <Link
-              href="/notes/filter/All"
-              onClick={toggle}
-              className={css.menuLink}
-            >
-              All
-            </Link>
-          </li>
-          {tags.map((tag) => (
-            <li key={tag} className={css.menuItem}>
+          {categories.map((category) => (
+            <li key={category} className={css.menuItem}>
               <Link
-                href={`/notes/filter/${tag}`}
-                onClick={toggle}
+                href={Routes.NotesFilter + category}
+                scroll={false}
                 className={css.menuLink}
+                onClick={() => setIsNotesOpen(false)}
               >
-                {tag}
+                {category}
               </Link>
             </li>
           ))}
@@ -46,4 +43,6 @@ export default function TagsMenu() {
       )}
     </div>
   );
-}
+};
+
+export default TagsMenu;

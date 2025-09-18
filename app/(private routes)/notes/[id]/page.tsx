@@ -4,16 +4,22 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import NoteDetailsClient from "./NoteDetails.client";
+import { fetchNoteById } from "@/lib/api/clientApi";
 import { Metadata } from "next";
-import { fetchNoteById } from "@/lib/api/serverApi";
 
-interface NotePageProps {
+interface NoteDetailsProps {
   params: Promise<{ id: string }>;
 }
 
+const getBaseURL = () => {
+  return process.env.NODE_ENV === "production"
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : `http://localhost:3000`;
+};
+
 export async function generateMetadata({
   params,
-}: NotePageProps): Promise<Metadata> {
+}: NoteDetailsProps): Promise<Metadata> {
   const { id } = await params;
   const note = await fetchNoteById(id);
   return {
@@ -21,21 +27,36 @@ export async function generateMetadata({
     description: note.content.slice(0, 30),
     openGraph: {
       title: `Note: ${note.title}`,
-      description: note.content.slice(0, 30),
-      url: `https://09-auth-plum-xi.vercel.app/notes/${id}`,
+      description: note.content.slice(0, 100),
+      url: `${getBaseURL()}/notes/${id}`,
+      siteName: "NoteHub",
+      type: "article",
       images: [
         {
           url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
           width: 1200,
           height: 630,
-          alt: "Note Hub Logo",
+          alt: note.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: note.title,
+      description: note.content.slice(0, 30),
+      images: [
+        {
+          url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
+          width: 1200,
+          height: 630,
+          alt: note.title,
         },
       ],
     },
   };
 }
 
-const NoteDetails = async ({ params }: NotePageProps) => {
+const NoteDetails = async ({ params }: NoteDetailsProps) => {
   const { id } = await params;
   const queryClient = new QueryClient();
 
@@ -44,11 +65,9 @@ const NoteDetails = async ({ params }: NotePageProps) => {
     queryFn: () => fetchNoteById(id),
   });
 
-  const dehydratedState = dehydrate(queryClient);
-
   return (
-    <HydrationBoundary state={dehydratedState}>
-      <NoteDetailsClient noteId={id} />
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <NoteDetailsClient id={id} />
     </HydrationBoundary>
   );
 };
