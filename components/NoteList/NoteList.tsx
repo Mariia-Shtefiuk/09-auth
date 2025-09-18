@@ -1,11 +1,9 @@
 import css from "./NoteList.module.css";
-import type { Note } from "../../types/note";
-import { deleteNote } from "@/lib/api";
-import { Loading } from "notiflix";
-import toast from "react-hot-toast";
+import type { Note } from "@/types/note";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Routes } from "@/config/routes";
+import { deleteNoteClient } from "@/lib/api/clientApi";
+// import { Loading } from "notiflix";
 import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
 
 interface NoteListProps {
@@ -15,50 +13,38 @@ interface NoteListProps {
 export default function NoteList({ notes }: NoteListProps) {
   const queryClient = useQueryClient();
 
-  const noteDeletion = useMutation({
-    mutationFn: async (id: string) => {
-      const data = await deleteNote(id);
-      return data;
-    },
+  const mutation = useMutation({
+    mutationFn: deleteNoteClient,
     onSuccess: () => {
-      Loading.remove();
-      toast.success("Note has been successfully deleted!");
-      queryClient.invalidateQueries({ queryKey: ["notes"] });
-    },
-    onError: () => {
-      Loading.remove();
-      toast.error("Error occured while deleting note!");
+      queryClient.invalidateQueries({
+        queryKey: ["notes"],
+      });
     },
   });
 
-  const onDelete = (id: string) => {
-    Loading.hourglass();
-    noteDeletion.mutate(id);
-  };
+  if (notes.length === 0) return null;
 
   return (
-    <ul className={css.list}>
-      {notes.map(({ id, title, content, tag }) => {
-        return (
-          <li key={id} className={css.listItem}>
-            <h2 className={css.title}>{title}</h2>
-            <p className={css.content}>{content}</p>
+    <>
+      {mutation.isPending && <LoadingIndicator />}
+      <ul className={css.list}>
+        {notes.map((note) => (
+          <li className={css.listItem} key={note.id}>
+            <h2 className={css.title}>{note.title}</h2>
+            <p className={css.content}>{note.content}</p>
             <div className={css.footer}>
-              <span className={css.tag}>{tag}</span>
-              <Link
-                className={css.tag}
-                href={Routes.NoteDetails + id}
-                scroll={false}
+              <span className={css.tag}>{note.tag}</span>
+              <Link href={`/notes/${note.id}`}>View details</Link>
+              <button
+                className={css.button}
+                onClick={() => mutation.mutate(note.id)}
               >
-                View details <LoadingIndicator />
-              </Link>
-              <button className={css.button} onClick={() => onDelete(id)}>
                 Delete
               </button>
             </div>
           </li>
-        );
-      })}
-    </ul>
+        ))}
+      </ul>
+    </>
   );
 }

@@ -10,20 +10,22 @@ interface ModalProps {
 }
 
 export default function Modal({ children, onClose }: ModalProps) {
-  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  };
-
+  const [mounted, setMounted] = useState(false);
+  const [modalRoot, setModalRoot] = useState<HTMLElement | null>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
+    setMounted(true);
+    const root = document.getElementById("modal-root");
+    setModalRoot(root);
+
+    document.body.style.overflow = "hidden";
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
     };
-    document.addEventListener("keydown", handleKeyDown);
-    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.body.style.overflow = "";
@@ -31,15 +33,24 @@ export default function Modal({ children, onClose }: ModalProps) {
     };
   }, [onClose]);
 
+  const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  if (!mounted || !modalRoot) return null;
+
   return createPortal(
     <div
       className={css.backdrop}
       role="dialog"
       aria-modal="true"
       onClick={handleBackdrop}
+      ref={backdropRef}
     >
       <div className={css.modal}>{children}</div>
     </div>,
-    document.body
+    modalRoot
   );
 }
