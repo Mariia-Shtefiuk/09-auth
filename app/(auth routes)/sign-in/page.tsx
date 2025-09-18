@@ -5,7 +5,7 @@ import { login, RegisterRequest } from "@/lib/api/clientApi";
 import { useAuthStore } from "@/lib/store/authStore";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import css from "./SignIn.module.css";
+import css from "./SignInPage.module.css";
 import toast from "react-hot-toast";
 import { isAxiosError } from "axios";
 

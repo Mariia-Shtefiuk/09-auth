@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { getServerMe } from "@/lib/api/serverApi";
 import { Routes } from "@/config/routes";
-import css from "./Profile.module.css";
+import css from "./ProfilePage.module.css";
 import Image from "next/image";
 import { Metadata } from "next";
 

@@ -8,7 +8,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { Toaster } from "react-hot-toast";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
-import css from "./Notes.client.module.css";
+import css from "./NotesPage.module.css";
 import { Routes } from "@/config/routes";
 import Link from "next/link";
 
