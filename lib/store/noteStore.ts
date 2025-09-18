@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { Tags } from "../api/ClientApi";
+import { Tags } from "../api/clientApi";
 
 export interface NewNoteData {
   title: string;
