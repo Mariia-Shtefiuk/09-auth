@@ -5,17 +5,15 @@ import * as Yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createNote, getCategories, Tags } from "@/lib/api/clientApi";
 import { Loading } from "notiflix";
-import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { NewNoteData, useNoteDraftStore } from "@/lib/store/noteStore";
+import { useNoteDraftStore } from "@/lib/store/noteStore";
 import { useEffect, useState } from "react";
-import { Routes } from "@/config/routes";
 
 export default function NoteForm() {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
-  const [categories, setCategories] = useState<Tags>(Tags);
+  const [categories, setCategories] = useState<Tags[]>([]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -37,7 +35,7 @@ export default function NoteForm() {
   };
 
   const onCancel = () => {
-    router.push(Routes.NotesFilter + "All");
+    router.push("/notes/filter" + "All");
   };
 
   const formScheme = Yup.object().shape({
@@ -48,7 +46,9 @@ export default function NoteForm() {
     content: Yup.string()
       .max(500, "Content must be less or equal to 500 characters")
       .default(""),
-    tag: Yup.string().oneOf(categories).default("Todo"),
+    tag: Yup.string()
+      .oneOf(Object.values(Tags) as string[])
+      .default("Todo"),
   });
 
   const queryClient = useQueryClient();
@@ -59,19 +59,23 @@ export default function NoteForm() {
       clearDraft();
       Loading.remove();
       queryClient.invalidateQueries({ queryKey: ["notes"] });
-      router.push(Routes.NotesFilter + "All");
-      toast.success("Note has been successfully created!");
+      router.push("/notes/filter/All");
+      alert("Note has been successfully created!");
     },
     onError: () => {
       Loading.remove();
-      toast.error("Error occured while creating note!");
+      alert("Error occured while creating note!");
     },
   });
 
   const onFormSubmit = async (formData: FormData) => {
     Loading.hourglass();
     try {
-      const values = Object.fromEntries(formData) as unknown as NewNoteData;
+      const values = {
+        title: formData.get("title") as string,
+        content: formData.get("content") as string,
+        tag: formData.get("tag") as string,
+      };
       const validatedValues = await formScheme.validate(values, {
         abortEarly: false,
       });

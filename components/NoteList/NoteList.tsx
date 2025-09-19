@@ -4,10 +4,8 @@ import css from "./NoteList.module.css";
 import type { Note } from "../../types/note";
 import { deleteNote } from "@/lib/api/clientApi";
 import { Loading } from "notiflix";
-import toast from "react-hot-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
-import { Routes } from "@/config/routes";
 import LoadingIndicator from "../LoadingIndicator/LoadingIndicator";
 
 interface NoteListProps {
@@ -24,12 +22,12 @@ export default function NoteList({ notes }: NoteListProps) {
     },
     onSuccess: () => {
       Loading.remove();
-      toast.success("Note has been successfully deleted!");
+      alert("Note has been successfully deleted!");
       queryClient.invalidateQueries({ queryKey: ["notes"] });
     },
     onError: () => {
       Loading.remove();
-      toast.error("Error occured while deleting note!");
+      alert("Error occured while deleting note!");
     },
   });
 
@@ -47,11 +45,7 @@ export default function NoteList({ notes }: NoteListProps) {
             <p className={css.content}>{content}</p>
             <div className={css.footer}>
               <span className={css.tag}>{tag}</span>
-              <Link
-                className={css.tag}
-                href={Routes.NoteDetails + id}
-                scroll={false}
-              >
+              <Link className={css.tag} href={"/notes/" + id} scroll={false}>
                 View details <LoadingIndicator />
               </Link>
               <button className={css.button} onClick={() => onDelete(id)}>

@@ -1,6 +1,5 @@
 "use client";
 
-import { Routes } from "@/config/routes";
 import css from "./TagsMenu.module.css";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -8,7 +7,7 @@ import { getCategories, Tags } from "@/lib/api/clientApi";
 
 const TagsMenu = () => {
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
-  const [categories, setCategories] = useState<Tags>(Tags);
+  const [categories, setCategories] = useState<Tags[]>([]);
 
   const handleClick = () => setIsNotesOpen(!isNotesOpen);
 
@@ -30,7 +29,7 @@ const TagsMenu = () => {
           {categories.map((category) => (
             <li key={category} className={css.menuItem}>
               <Link
-                href={Routes.NotesFilter + category}
+                href={"/notes/filter" + category}
                 scroll={false}
                 className={css.menuLink}
                 onClick={() => setIsNotesOpen(false)}
