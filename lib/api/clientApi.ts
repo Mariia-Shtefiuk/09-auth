@@ -36,7 +36,7 @@ export const fetchNotes = async (
   search: string,
   page: number = 1,
   perPage: number = 10,
-  tag?: Exclude<Tags, "All">,
+  tag?: Exclude<Tags[number], "All"> | undefined,
   sortBy?: SortBy
 ): Promise<FetchNotesResponse> => {
   try {

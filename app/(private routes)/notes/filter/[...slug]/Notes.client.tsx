@@ -6,10 +6,8 @@ import SearchBox from "@/components/SearchBox/SearchBox";
 import { fetchNotes, Tags } from "@/lib/api/clientApi";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Toaster } from "react-hot-toast";
 import { useDebounce, useDebouncedCallback } from "use-debounce";
 import css from "./NotesPage.module.css";
-import { Routes } from "@/config/routes";
 import Link from "next/link";
 
 interface NotesClientProps {
@@ -44,13 +42,12 @@ const NotesClient = ({ category }: NotesClientProps) => {
 
   return (
     <div className={css.app}>
-      <Toaster />
       <header className={css.toolbar}>
         <SearchBox onChange={onQueryChange} />
         {totalPages > 1 && (
           <Pagination totalPages={totalPages} page={page} setPage={setPage} />
         )}
-        <Link className={css.button} href={Routes.NoteCreate}>
+        <Link className={css.button} href={"/notes/action/create"}>
           Create note +
         </Link>
       </header>
