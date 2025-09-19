@@ -18,7 +18,7 @@ export type RegisterRequest = {
 };
 
 export type EditRequest = {
-  email: string;
+  email?: string;
   username: string;
 };
 
