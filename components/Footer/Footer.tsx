@@ -9,7 +9,7 @@ const Footer = () => {
         <div className={css.wrap}>
           <p>
             Developer:
-            <a href="https://github.com/Iryna-Poluhovich" target="_blank">
+            <a href="https://github.com/Mariia-Shtefiuk" target="_blank">
               Mariia Sh.
             </a>
           </p>
