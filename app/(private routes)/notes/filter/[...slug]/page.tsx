@@ -9,16 +9,14 @@ import { Metadata } from "next";
 import { fetchServerNotes } from "@/lib/api/serverApi";
 
 interface NotesFilterProps {
-  params: Promise<{ slug: Tags }>;
+  params: Promise<{ slug: string[] }>;
 }
-
-export const dynamicParams = false;
-export const revalidate = 900;
 
 export async function generateMetadata({
   params,
 }: NotesFilterProps): Promise<Metadata> {
   const { slug } = await params;
+  const currentSlug = slug[0] as keyof typeof descriptions;
   const descriptions = {
     All: `Browse all your notes in one place. Stay organized and access everything instantly with Notehub.`,
     Work: `Manage and share your work notes with ease. Stay productive and organized using Notehub.`,
@@ -29,10 +27,10 @@ export async function generateMetadata({
   };
   return {
     title: "NoteHub - Share Notes Instantly Online",
-    description: descriptions[slug[0]],
+    description: descriptions[currentSlug],
     openGraph: {
       title: "NoteHub - Share Notes Instantly Online",
-      description: descriptions[slug[0]],
+      description: descriptions[currentSlug],
       siteName: "NoteHub",
       type: "website",
       images: [
@@ -47,7 +45,7 @@ export async function generateMetadata({
     twitter: {
       card: "summary_large_image",
       title: "NoteHub - Share Notes Instantly Online",
-      description: descriptions[slug[0]],
+      description: descriptions[currentSlug],
       images: [
         {
           url: "https://ac.goit.global/fullstack/react/notehub-og-meta.jpg",
@@ -64,11 +62,12 @@ export async function generateMetadata({
 export default async function NotesFilter({ params }: NotesFilterProps) {
   const queryClient = new QueryClient();
   const { slug } = await params;
-  const category = slug[0] === "All" ? undefined : slug[0];
+  const currentSlug = slug[0] as Tags;
+  const category = currentSlug === "All" ? undefined : currentSlug;
 
   await queryClient.prefetchQuery({
     queryKey: ["notes", { search: "", page: 1, category }],
-    queryFn: () => fetchServerNotes("", 1, undefined, category),
+    queryFn: () => fetchServerNotes(1, "", category),
   });
 
   return (
