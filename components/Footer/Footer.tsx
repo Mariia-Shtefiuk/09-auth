@@ -10,7 +10,7 @@ const Footer = () => {
           <p>
             Developer:
             <a href="https://github.com/Iryna-Poluhovich" target="_blank">
-              Iryna-Poluhovich
+              Mariia Sh.
             </a>
           </p>
           <p>

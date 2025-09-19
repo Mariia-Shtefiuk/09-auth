@@ -31,16 +31,16 @@ export default async function ProfilePage() {
     console.error(error);
   }
 
-  if (!user) {
-    return <div className={css.loading}>Loading...</div>;
-  }
+  // if (!user) {
+  //   return <div className={css.loading}>Loading...</div>;
+  // }
 
   return (
     <main className={css.mainContent}>
       <div className={css.profileCard}>
         <div className={css.header}>
           <h1 className={css.formTitle}>Profile Page</h1>
-          <Link href={"/profile-edit"} className={css.editProfileButton}>
+          <Link href={"/profile/edit"} className={css.editProfileButton}>
             Edit Profile
           </Link>
         </div>

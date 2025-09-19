@@ -6,18 +6,18 @@ import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
 
 const geistSans = Geist({
-  variable: "--font-geist-sans",
+  // variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
 const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+  // variable: "--font-geist-mono",
   subsets: ["latin"],
 });
 
 const roboto = Roboto({
   weight: ["400", "500", "700"],
-  variable: "--font-roboto",
+  // variable: "--font-roboto",
   subsets: ["latin"],
   display: "swap",
 });
@@ -73,7 +73,7 @@ export default function RootLayout({
     <html lang="en">
       {/* ✅ додаємо roboto.variable */}
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${roboto.variable}`}
+        className={`${geistSans.className} ${geistMono.className} ${roboto.className}`}
       >
         <TanStackProvider>
           <Header />

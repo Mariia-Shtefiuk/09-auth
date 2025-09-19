@@ -1,58 +1,60 @@
 import { cookies } from "next/headers";
-import { FetchNotes, nextServer } from "./api";
+import { nextServer } from "./api";
 import { User } from "@/types/user";
-import { SortBy, Tags } from "./clientApi";
 import { Note } from "@/types/note";
+// import { SortBy, Tags } from "./clientApi";
+import { FetchNotesResponse } from "./clientApi";
 
 export const fetchServerNotes = async (
-  search: string,
   page: number = 1,
-  perPage: number = 10,
-  tag?: Exclude<Tags[number], "All">,
-  sortBy?: SortBy
-) => {
+  searchQuery: string = "",
+  noteTag?: string
+): Promise<FetchNotesResponse> => {
   const cookieStore = await cookies();
-  const { data } = await nextServer.get<FetchNotes>("notes", {
+
+  const res = await nextServer.get<FetchNotesResponse>("notes", {
     params: {
-      search,
       page,
-      perPage,
-      tag,
-      sortBy,
+      search: searchQuery,
+      tag: noteTag,
+      perPage: 12,
     },
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
-  return data;
+  return res.data;
 };
 
-export const fetchServerNoteById = async (id: string) => {
+export const fetchServerNoteById = async (noteid: string): Promise<Note> => {
   const cookieStore = await cookies();
-  const { data } = await nextServer.get<Note>(`notes/${id}`, {
+
+  const res = await nextServer.get<Note>(`notes/${noteid}`, {
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
-  return data;
+  return res.data;
 };
 
 export const checkServerSession = async () => {
   const cookieStore = await cookies();
-  const response = await nextServer.get("auth/session", {
+
+  const res = await nextServer.get("auth/session", {
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
-  return response;
+  return res;
 };
 
-export const getServerMe = async () => {
+export const getServerMe = async (): Promise<User> => {
   const cookieStore = await cookies();
-  const { data } = await nextServer.get<User>("users/me", {
+
+  const res = await nextServer.get<User>("users/me", {
     headers: {
       Cookie: cookieStore.toString(),
     },
   });
-  return data;
+  return res.data;
 };

@@ -18,8 +18,8 @@ export type RegisterRequest = {
 };
 
 export type EditRequest = {
-  email?: string;
-  username?: string;
+  email: string;
+  username: string;
 };
 
 interface NewNoteData {
@@ -66,7 +66,7 @@ export const createNote = async ({ title, content, tag }: NewNoteData) => {
 
 export const fetchNoteById = async (id: string) => {
   try {
-    const { data } = await nextServer.get<Note>(`notes/${id}`);
+    const { data } = await nextServer.get<Note>(`/notes/${id}`);
     return data;
   } catch (error) {
     console.error(`Failed to fetch note ${id}:`, error);
@@ -76,7 +76,7 @@ export const fetchNoteById = async (id: string) => {
 
 export const deleteNote = async (id: string) => {
   try {
-    const { data } = await nextServer.delete<Note>(`notes/${id}`);
+    const { data } = await nextServer.delete<Note>(`/notes/${id}`);
     return data;
   } catch (error) {
     console.error(`Failed to delete note ${id}:`, error);
@@ -98,7 +98,7 @@ export const registerUser = async (
   userData: RegisterRequest
 ): Promise<User> => {
   try {
-    const { data } = await nextServer.post<User>("auth/register", userData);
+    const { data } = await nextServer.post<User>("/auth/register", userData);
     return data;
   } catch (error) {
     console.error("Registration failed:", error);
@@ -108,7 +108,7 @@ export const registerUser = async (
 
 export const loginUser = async (userData: RegisterRequest): Promise<User> => {
   try {
-    const { data } = await nextServer.post<User>("auth/login", userData);
+    const { data } = await nextServer.post<User>("/auth/login", userData);
     return data;
   } catch (error) {
     console.error("Login failed:", error);
@@ -118,7 +118,7 @@ export const loginUser = async (userData: RegisterRequest): Promise<User> => {
 
 export const checkSession = async (): Promise<boolean> => {
   try {
-    const { data } = await nextServer.get<CheckSessionRequest>("auth/session");
+    const { data } = await nextServer.get<CheckSessionRequest>("/auth/session");
     return data.success;
   } catch (error) {
     console.error("Session check failed:", error);
@@ -128,7 +128,7 @@ export const checkSession = async (): Promise<boolean> => {
 
 export const getUserProfile = async (): Promise<User> => {
   try {
-    const { data } = await nextServer.get<User>("users/me");
+    const { data } = await nextServer.get<User>("/users/me");
     return data;
   } catch (error) {
     console.error("Failed to fetch user profile:", error);
@@ -138,7 +138,7 @@ export const getUserProfile = async (): Promise<User> => {
 
 export const editUserProfile = async (userData: EditRequest): Promise<User> => {
   try {
-    const { data } = await nextServer.patch<User>("users/me", userData);
+    const { data } = await nextServer.patch<User>("/users/me", userData);
     return data;
   } catch (error) {
     console.error("Failed to update profile:", error);
@@ -148,7 +148,7 @@ export const editUserProfile = async (userData: EditRequest): Promise<User> => {
 
 export const logout = async (): Promise<void> => {
   try {
-    await nextServer.post("auth/logout");
+    await nextServer.post("/auth/logout");
   } catch (error) {
     console.error("Logout failed:", error);
     throw error;
