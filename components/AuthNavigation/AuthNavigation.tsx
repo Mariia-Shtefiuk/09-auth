@@ -23,7 +23,7 @@ export default function AuthNavigation() {
   };
 
   return isAuthenticated ? (
-    <div>
+    <>
       <li className={css.navigationItem}>
         <Link href="/profile" prefetch={false} className={css.navigationLink}>
           Profile
@@ -31,12 +31,12 @@ export default function AuthNavigation() {
       </li>
 
       <li className={css.navigationItem}>
-        <p className={css.userEmail}>User email</p>
+        <p className={css.userEmail}>{user?.username || user?.email}</p>
         <button className={css.logoutButton} onClick={handleLogout}>
           Logout
         </button>
       </li>
-    </div>
+    </>
   ) : (
     <>
       <li className={css.navigationItem}>
