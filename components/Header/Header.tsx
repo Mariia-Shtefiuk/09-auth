@@ -4,11 +4,8 @@ import AuthNavigation from "../AuthNavigation/AuthNavigation";
 import TagsMenu from "../TagsMenu/TagsMenu";
 import { Tags } from "@/lib/api/clientApi";
 
-interface HeaderProps {
-  categories: Tags[];
-}
-
-export default function Header ({ categories }: HeaderProps) => {
+export default function Header() {
+  const categories: Tags[] = ["All", "Todo", "Work", "Personal", "Shopping"];
   return (
     <header className={css.header}>
       <Link href={"/"} aria-label="Home">
@@ -21,13 +18,11 @@ export default function Header ({ categories }: HeaderProps) => {
           </li>
 
           <li>
-            <TagsMenu categories />
+            <TagsMenu />
           </li>
-
-          <AuthNavigation />
+          <AuthNavigation tags={categories} />
         </ul>
       </nav>
     </header>
   );
-};
-
+}
