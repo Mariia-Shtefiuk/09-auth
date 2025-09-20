@@ -3,25 +3,20 @@
 import css from "./NoteForm.module.css";
 import * as Yup from "yup";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createNote, getCategories, Tags } from "@/lib/api/clientApi";
+import { createNote, Tags } from "@/lib/api/clientApi";
 import { Loading } from "notiflix";
 import { useRouter } from "next/navigation";
 import { useNoteDraftStore } from "@/lib/store/noteStore";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-export default function NoteForm() {
+interface NoteFormProps {
+  categories: Tags[];
+}
+
+export default function NoteForm({ categories }: NoteFormProps) {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
-  const [categories, setCategories] = useState<Tags[]>([]);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await getCategories();
-      setCategories(data);
-    };
-    fetchCategories();
-  }, []);
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -35,7 +30,7 @@ export default function NoteForm() {
   };
 
   const onCancel = () => {
-    router.push("/notes/filter" + "All");
+    router.push("/notes/filter/All");
   };
 
   const formScheme = Yup.object().shape({
@@ -46,9 +41,7 @@ export default function NoteForm() {
     content: Yup.string()
       .max(500, "Content must be less or equal to 500 characters")
       .default(""),
-    tag: Yup.string()
-      .oneOf(Object.values(Tags) as string[])
-      .default("Todo"),
+    tag: Yup.string().oneOf(categories).default("Todo"),
   });
 
   const queryClient = useQueryClient();
@@ -102,7 +95,7 @@ export default function NoteForm() {
           type="text"
           name="title"
           id="title"
-          defaultValue={draft.title}
+          value={draft.title}
           onChange={handleChange}
           className={css.input}
         />
@@ -115,7 +108,7 @@ export default function NoteForm() {
           name="content"
           id="content"
           rows={8}
-          defaultValue={draft.content}
+          value={draft.content}
           onChange={handleChange}
           className={css.textarea}
         />

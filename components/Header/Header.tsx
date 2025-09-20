@@ -1,8 +1,14 @@
 import Link from "next/link";
 import css from "./Header.module.css";
 import AuthNavigation from "../AuthNavigation/AuthNavigation";
+import TagsMenu from "../TagsMenu/TagsMenu";
+import { Tags } from "@/lib/api/clientApi";
 
-const Header = async () => {
+interface HeaderProps {
+  categories: Tags[];
+}
+
+export default function Header ({ categories }: HeaderProps) => {
   return (
     <header className={css.header}>
       <Link href={"/"} aria-label="Home">
@@ -13,6 +19,11 @@ const Header = async () => {
           <li>
             <Link href={"/"}>Home</Link>
           </li>
+
+          <li>
+            <TagsMenu categories />
+          </li>
+
           <AuthNavigation />
         </ul>
       </nav>
@@ -20,4 +31,3 @@ const Header = async () => {
   );
 };
 
-export default Header;
