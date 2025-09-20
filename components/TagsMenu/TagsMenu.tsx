@@ -2,22 +2,22 @@
 
 import css from "./TagsMenu.module.css";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { getCategories, Tags } from "@/lib/api/clientApi";
+import { useState } from "react";
+import { Tags } from "@/lib/api/clientApi";
 
 const TagsMenu = () => {
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
-  const [categories, setCategories] = useState<Tags[]>([]);
-
+  // const [categories, setCategories] = useState<Tags[]>([]);
+  const categories = Tags;
   const handleClick = () => setIsNotesOpen(!isNotesOpen);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      const data = await getCategories();
-      setCategories(data);
-    };
-    fetchCategories();
-  }, []);
+  // useEffect(() => {
+  //   const fetchCategories = async () => {
+  //     const data = await getCategories();
+  //     setCategories(data);
+  //   };
+  //   fetchCategories();
+  // }, []);
 
   return (
     <div className={css.menuContainer}>
