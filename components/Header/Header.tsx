@@ -1,24 +1,24 @@
 import Link from "next/link";
 import css from "./Header.module.css";
 import AuthNavigation from "../AuthNavigation/AuthNavigation";
-import { Tags } from "@/lib/api/clientApi";
 import TagsMenu from "../TagsMenu/TagsMenu";
 
 export default function Header() {
-  const categories: Tags[] = ["All", "Todo", "Work", "Personal", "Shopping"];
   return (
     <header className={css.header}>
-      <Link href={"/"} aria-label="Home">
+      <Link href={"/"} aria-label="Home" className={css.headerLink}>
         NoteHub
       </Link>
       <nav aria-label="Main Navigation">
         <ul className={css.navigation}>
           <li>
-            <Link href={"/"}>Home</Link>
+            <Link href={"/"} className={css.headerLink}>
+              Home
+            </Link>
           </li>
-          <li>
-            <TagsMenu />
-          </li>
+
+          <TagsMenu />
+
           <AuthNavigation />
         </ul>
       </nav>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Tags } from "@/lib/api/clientApi";
 
-const TagsMenu = () => {
+export default function TagsMenu() {
   const [isNotesOpen, setIsNotesOpen] = useState<boolean>(false);
   // const [categories, setCategories] = useState<Tags[]>([]);
   const categories = Tags;
@@ -42,6 +42,4 @@ const TagsMenu = () => {
       )}
     </div>
   );
-};
-
-export default TagsMenu;
+}

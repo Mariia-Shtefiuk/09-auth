@@ -7,7 +7,7 @@ interface PublicLayoutProps {
   children: React.ReactNode;
 }
 
-const PublicLayout = ({ children }: PublicLayoutProps) => {
+export default function PublicLayout({ children }: PublicLayoutProps) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -17,6 +17,4 @@ const PublicLayout = ({ children }: PublicLayoutProps) => {
   }, [router]);
 
   return <> {loading ? <p>Loading...</p> : children}</>;
-};
-
-export default PublicLayout;
+}

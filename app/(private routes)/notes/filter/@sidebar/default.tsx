@@ -2,7 +2,7 @@ import Link from "next/link";
 import css from "./SidebarNotes.module.css";
 import { getCategories } from "@/lib/api/clientApi";
 
-const SidebarNotes = async () => {
+export default async function SidebarNotes() {
   const categories = await getCategories();
 
   return (
@@ -25,6 +25,4 @@ const SidebarNotes = async () => {
       ))}
     </ul>
   );
-};
-
-export default SidebarNotes;
+}

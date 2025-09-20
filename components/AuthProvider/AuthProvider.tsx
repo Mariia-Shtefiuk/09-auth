@@ -18,15 +18,17 @@ export default function AuthProvider({
   const clearIsAuthenticated = useAuthStore(
     (state) => state.clearIsAuthenticated
   );
+
   const router = useRouter();
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
     const verifySession = async () => {
       try {
-        const authenticated = await checkSession();
+        const isAuthenticated = await checkSession();
+        console.log("isAuthenticated" + isAuthenticated);
 
-        if (!authenticated) {
+        if (!isAuthenticated) {
           clearIsAuthenticated();
           if (requireAuth) router.replace("/sign-in");
           return;
@@ -46,7 +48,7 @@ export default function AuthProvider({
     verifySession();
   }, [setAuthUser, clearIsAuthenticated, router, requireAuth]);
 
-  if (checking) return <p>Перевіряємо авторизацію користувача...</p>;
+  if (checking) return <p>Checking if authorised...</p>;
 
   return <>{children}</>;
 }

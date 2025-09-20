@@ -10,6 +10,7 @@ export default function AuthNavigation() {
   const router = useRouter();
   const { isAuthenticated, user, clearIsAuthenticated } = useAuthStore();
   console.log(isAuthenticated);
+  console.log("AuthNavigation render:", { isAuthenticated, user });
   const handleLogout = async () => {
     try {
       await logout();
