@@ -9,14 +9,11 @@ import { useRouter } from "next/navigation";
 import { useNoteDraftStore } from "@/lib/store/noteStore";
 import { useState } from "react";
 
-interface NoteFormProps {
-  tags: Tags[];
-}
-
-export default function NoteForm({ tags }: NoteFormProps) {
+export default function NoteForm() {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
+  const Tags = ["All", "Todo", "Work", "Personal", "Shopping"];
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -41,7 +38,7 @@ export default function NoteForm({ tags }: NoteFormProps) {
     content: Yup.string()
       .max(500, "Content must be less or equal to 500 characters")
       .default(""),
-    tag: Yup.string().oneOf(tags).default("Todo"),
+    tag: Yup.string().oneOf(Tags).default("Todo"),
   });
 
   const queryClient = useQueryClient();
@@ -124,13 +121,11 @@ export default function NoteForm({ tags }: NoteFormProps) {
           value={draft.tag}
           onChange={handleChange}
         >
-          {tags
-            .filter((tag) => tag !== "All")
-            .map((tag) => (
-              <option key={tag} value={tag}>
-                {tag}
-              </option>
-            ))}
+          {Tags.filter((tag) => tag !== "All").map((tag) => (
+            <option key={tag} value={tag}>
+              {tag}
+            </option>
+          ))}
         </select>
         {errors?.tag && <span className={css.error}>{errors.tag}</span>}
       </div>

@@ -61,10 +61,9 @@ export const fetchNotes = async (
   }
 };
 
-export const createNote = async ({ title, content, tag }: NewNoteData) => {
-  console.log("START CREATE NOTE CLIENT");
-  console.log(nextServer.defaults.baseURL + "/notes");
+export const createNote = async (note: NewNoteData) => {
   try {
+    const { title, content, tag } = note;
     const { data } = await nextServer.post<Note>("/notes", {
       title,
       content,

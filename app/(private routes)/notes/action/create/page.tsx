@@ -2,7 +2,7 @@ import NoteForm from "@/components/NoteForm/NoteForm";
 import css from "./NoteCreate.module.css";
 import { Metadata } from "next";
 
-export const tags = ["All", "Todo", "Work", "Personal", "Shopping"] as const;
+//export const tags = ["All", "Todo", "Work", "Personal", "Shopping"] as const;
 
 export const metadata: Metadata = {
   title: "NoteHub - Share Notes Instantly Online",
@@ -42,7 +42,7 @@ export default async function CreateNote() {
     <main className={css.main}>
       <div className={css.container}>
         <h1 className={css.title}>Create note</h1>
-        <NoteForm tags={[...tags]} />
+        <NoteForm />
       </div>
     </main>
   );
