@@ -1,5 +1,3 @@
-export const dynamic = "force-dynamic";
-
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,6 +22,8 @@ export const metadata: Metadata = {
     ],
   },
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function ProfilePage() {
   const user = await getServerMe();
