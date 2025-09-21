@@ -26,12 +26,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ProfilePage() {
-  let user;
-  try {
-    user = await getServerMe();
-  } catch (error) {
-    console.error(error);
-  }
+  const user = await getServerMe();
 
   // if (!user) {
   //   return <div className={css.loading}>Loading...</div>;
