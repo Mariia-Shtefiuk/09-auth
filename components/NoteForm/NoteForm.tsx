@@ -10,10 +10,10 @@ import { useNoteDraftStore } from "@/lib/store/noteStore";
 import { useState } from "react";
 
 interface NoteFormProps {
-  categories: Tags[];
+  tags: Tags[];
 }
 
-export default function NoteForm({ categories }: NoteFormProps) {
+export default function NoteForm({ tags }: NoteFormProps) {
   const router = useRouter();
   const [errors, setErrors] = useState<Record<string, string>>({});
   const { draft, setDraft, clearDraft } = useNoteDraftStore();
@@ -41,7 +41,7 @@ export default function NoteForm({ categories }: NoteFormProps) {
     content: Yup.string()
       .max(500, "Content must be less or equal to 500 characters")
       .default(""),
-    tag: Yup.string().oneOf(categories).default("Todo"),
+    tag: Yup.string().oneOf(tags).default("Todo"),
   });
 
   const queryClient = useQueryClient();
@@ -124,7 +124,7 @@ export default function NoteForm({ categories }: NoteFormProps) {
           value={draft.tag}
           onChange={handleChange}
         >
-          {categories
+          {tags
             .filter((tag) => tag !== "All")
             .map((tag) => (
               <option key={tag} value={tag}>

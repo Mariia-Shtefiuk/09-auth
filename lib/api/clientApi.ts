@@ -62,8 +62,10 @@ export const fetchNotes = async (
 };
 
 export const createNote = async ({ title, content, tag }: NewNoteData) => {
+  console.log("START CREATE NOTE CLIENT");
+  console.log(nextServer.defaults.baseURL + "/notes");
   try {
-    const { data } = await nextServer.post<Note>("notes", {
+    const { data } = await nextServer.post<Note>("/notes", {
       title,
       content,
       tag,
@@ -135,6 +137,7 @@ export const loginUser = async (userData: RegisterRequest): Promise<User> => {
 export const checkSession = async (): Promise<boolean> => {
   try {
     const { data } = await nextServer.get<CheckSessionRequest>("/auth/session");
+
     return data.success;
   } catch (error) {
     console.error("Session check failed:", error);
@@ -145,6 +148,7 @@ export const checkSession = async (): Promise<boolean> => {
 export const getUserProfile = async (): Promise<User> => {
   try {
     //await nextServer.post("/auth/logout");
+
     const { data } = await nextServer.get<User>("/users/me");
     return data;
   } catch (error) {

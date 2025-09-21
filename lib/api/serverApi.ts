@@ -4,6 +4,7 @@ import { User } from "@/types/user";
 import { Note } from "@/types/note";
 // import { SortBy, Tags } from "./clientApi";
 import { FetchNotesResponse } from "./clientApi";
+import { NewNoteData } from "../store/noteStore";
 
 export const fetchServerNotes = async (
   page: number = 1,
@@ -39,6 +40,25 @@ export const fetchServerNoteById = async (noteid: string): Promise<Note> => {
     },
   });
   return res.data;
+};
+
+export const createServerNote = async ({
+  title,
+  content,
+  tag,
+}: NewNoteData) => {
+  console.log("START CREATE NOTE SERVER");
+  try {
+    const { data } = await api.post<Note>("/notes", {
+      title,
+      content,
+      tag,
+    });
+    return data;
+  } catch (error) {
+    console.error("Failed to create note:", error);
+    throw error;
+  }
 };
 
 export const checkServerSession = async () => {
