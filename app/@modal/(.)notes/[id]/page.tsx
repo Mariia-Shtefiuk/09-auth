@@ -10,10 +10,10 @@ type Props = {
   params: Promise<{ id: string }>;
 };
 
-const NotePreview = async ({ params }: Props) => {
+export default async function NotePreview({ params }: Props) {
   const { id } = await params;
   const queryClient = new QueryClient();
-
+  console.log("modal:" + id);
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => fetchServerNoteById(id),
@@ -24,6 +24,4 @@ const NotePreview = async ({ params }: Props) => {
       <NotePreviewClient id={id} />
     </HydrationBoundary>
   );
-};
-
-export default NotePreview;
+}

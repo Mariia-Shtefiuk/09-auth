@@ -64,7 +64,7 @@ export default async function NotesFilter({ params }: NotesFilterProps) {
   const { slug } = await params;
   const currentSlug = slug[0] as Tags;
   const category = currentSlug === "All" ? undefined : currentSlug;
-
+  console.log("slug");
   await queryClient.prefetchQuery({
     queryKey: ["notes", { search: "", page: 1, category }],
     queryFn: () => fetchServerNotes(1, "", category),

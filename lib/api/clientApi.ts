@@ -36,12 +36,23 @@ export const fetchNotes = async (
   search: string,
   page: number = 1,
   perPage: number = 10,
-  tag?: Exclude<Tags[number], "All"> | undefined,
+  tag?: Exclude<Tags[number], ""> | undefined,
   sortBy?: SortBy
 ): Promise<FetchNotesResponse> => {
   try {
+    const params: Record<string, string | number> = {
+      search,
+      page,
+      perPage,
+    };
+
+    if (tag) params.tag = tag;
+    if (sortBy) params.sortBy = sortBy;
+
+    console.log("Request URL:", nextServer.defaults.baseURL + "/notes");
+    console.log("Params:", params);
     const { data } = await nextServer.get<FetchNotesResponse>("notes", {
-      params: { search, page, perPage, tag, sortBy },
+      params,
     });
     return data;
   } catch (error) {
@@ -65,6 +76,7 @@ export const createNote = async ({ title, content, tag }: NewNoteData) => {
 };
 
 export const fetchNoteById = async (id: string) => {
+  console.log("ID: " + id);
   try {
     const { data } = await nextServer.get<Note>(`/notes/${id}`);
     return data;
@@ -85,14 +97,18 @@ export const deleteNote = async (id: string) => {
 };
 
 export const getCategories = async () => {
-  try {
-    const { data } = await nextServer.get<Tags[]>("categories");
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch categories:", error);
-    throw error;
-  }
+  return Tags;
 };
+
+// export const getCategories = async () => {
+//   try {
+//     const { data } = await nextServer.get<Tags[]>("categories");
+//     return data;
+//   } catch (error) {
+//     console.error("Failed to fetch categories:", error);
+//     throw error;
+//   }
+// };
 
 export const registerUser = async (
   userData: RegisterRequest
@@ -128,6 +144,7 @@ export const checkSession = async (): Promise<boolean> => {
 
 export const getUserProfile = async (): Promise<User> => {
   try {
+    //await nextServer.post("/auth/logout");
     const { data } = await nextServer.get<User>("/users/me");
     return data;
   } catch (error) {

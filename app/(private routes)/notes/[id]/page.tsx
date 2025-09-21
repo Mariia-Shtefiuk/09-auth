@@ -6,6 +6,7 @@ import {
 import NoteDetailsClient from "./NoteDetails.client";
 import { fetchNoteById } from "@/lib/api/clientApi";
 import { Metadata } from "next";
+import { fetchServerNoteById } from "@/lib/api/serverApi";
 
 interface NoteDetailsProps {
   params: Promise<{ id: string }>;
@@ -59,10 +60,10 @@ export async function generateMetadata({
 const NoteDetails = async ({ params }: NoteDetailsProps) => {
   const { id } = await params;
   const queryClient = new QueryClient();
-
+  console.log("PRIVATE ROUTE " + id);
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
-    queryFn: () => fetchNoteById(id),
+    queryFn: () => fetchServerNoteById(id),
   });
 
   return (

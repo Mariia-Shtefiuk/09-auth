@@ -15,7 +15,7 @@ export default async function SidebarNotes() {
       {categories.map((category) => (
         <li key={category} className={css.menuItem}>
           <Link
-            href={"/notes/filter" + category}
+            href={"/notes/filter/" + category}
             scroll={false}
             className={css.menuLink}
           >
