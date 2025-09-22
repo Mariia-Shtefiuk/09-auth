@@ -146,8 +146,7 @@ export const checkSession = async (): Promise<boolean> => {
 
 export const getUserProfile = async (): Promise<User> => {
   try {
-    //await nextServer.post("/auth/logout");
-
+    await nextServer.post("/auth/logout");
     const { data } = await nextServer.get<User>("/users/me");
     return data;
   } catch (error) {

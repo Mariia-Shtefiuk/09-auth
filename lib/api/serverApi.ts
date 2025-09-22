@@ -20,7 +20,6 @@ export const fetchServerNotes = async (
   };
 
   if (noteTag) params.tag = noteTag;
-  console.log("SERVER API STUDY");
   const res = await api.get<FetchNotesResponse>("/notes", {
     params,
     headers: {
@@ -40,25 +39,6 @@ export const fetchServerNoteById = async (noteid: string): Promise<Note> => {
     },
   });
   return res.data;
-};
-
-export const createServerNote = async ({
-  title,
-  content,
-  tag,
-}: NewNoteData) => {
-  console.log("START CREATE NOTE SERVER");
-  try {
-    const { data } = await api.post<Note>("/notes", {
-      title,
-      content,
-      tag,
-    });
-    return data;
-  } catch (error) {
-    console.error("Failed to create note:", error);
-    throw error;
-  }
 };
 
 export const checkServerSession = async () => {

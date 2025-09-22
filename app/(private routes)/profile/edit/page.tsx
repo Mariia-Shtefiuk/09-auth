@@ -15,7 +15,7 @@ function parseFormData(formData: FormData): EditRequest {
 function getErrorMessage(error: unknown): string {
   if (isAxiosError(error)) return error.message;
   if (error instanceof Error) return error.message;
-  return "Internal Saerver Error";
+  return "Internal Server Error";
 }
 
 export default function ProfileEditPage() {
@@ -92,7 +92,7 @@ export default function ProfileEditPage() {
             <button
               type="button"
               className={css.cancelButton}
-              onClick={() => router.push("/profile")}
+              onClick={() => router.back()}
             >
               Cancel
             </button>

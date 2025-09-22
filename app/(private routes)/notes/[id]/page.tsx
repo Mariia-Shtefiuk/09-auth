@@ -4,7 +4,6 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 import NoteDetailsClient from "./NoteDetails.client";
-import { fetchNoteById } from "@/lib/api/clientApi";
 import { Metadata } from "next";
 import { fetchServerNoteById } from "@/lib/api/serverApi";
 
@@ -22,7 +21,7 @@ export async function generateMetadata({
   params,
 }: NoteDetailsProps): Promise<Metadata> {
   const { id } = await params;
-  const note = await fetchNoteById(id);
+  const note = await fetchServerNoteById(id);
   return {
     title: `Note: ${note.title}`,
     description: note.content.slice(0, 30),
@@ -60,7 +59,7 @@ export async function generateMetadata({
 const NoteDetails = async ({ params }: NoteDetailsProps) => {
   const { id } = await params;
   const queryClient = new QueryClient();
-  console.log("PRIVATE ROUTE " + id);
+
   await queryClient.prefetchQuery({
     queryKey: ["note", id],
     queryFn: () => fetchServerNoteById(id),
